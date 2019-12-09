@@ -1,0 +1,30 @@
+version: "3"
+services:
+  redis-mongo-client:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+    environment:
+      - DEBUG_MODE=1
+      - PORT=8000
+      - MONGO_DSN=mongodb://root:root@mongodb:27017/?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1
+      - MONGO_DATABASE=sandbox
+      - REDIS_MS_CACHE_DSN=redis://redis:6379
+    volumes:
+      - ./:/opt/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    image: mongo:3.4-xenial
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  redis:
+    image: redis:5
